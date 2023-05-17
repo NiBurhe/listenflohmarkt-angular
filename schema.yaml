@@ -1,0 +1,3715 @@
+openapi: 3.0.1
+info:
+  title: Listenflohmarkt
+  version: "2"
+servers:
+  - url: https://www.listenflohmarkt-api.org/api
+  - url: https://192.168.178.77/api2/public/api
+paths:
+  /v2/requestListsCheck:
+    post:
+      tags:
+        - RequestList
+      summary: Precheck for request lists
+      operationId: precheckListsRequest
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestListsCheckRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RequestListsCheckResponse'
+  /v2/requestLists:
+    post:
+      tags:
+        - RequestList
+      summary: Requests lists
+      operationId: requestLists
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RequestListsRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/confirmLists/{secret}:
+    get:
+      tags:
+        - RequestList
+      summary: Get Confirm List by Secret
+      operationId: confirmLists
+      parameters:
+        - name: secret
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/register:
+    post:
+      tags:
+        - User
+      summary: Register new User
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: '`User`'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegisterResponse'
+  /v2/confirmUser/{secret}:
+    get:
+      tags:
+        - User
+      summary: Get User Confirmation
+      operationId: confirmUser
+      parameters:
+        - name: secret
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmationResponse'
+  /v2/passwordReset:
+    post:
+      tags:
+        - User
+      summary: Initiate Password Reset
+      operationId: requestPasswordReset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/confirmPWReset:
+    post:
+      tags:
+        - User
+      summary: Confirm Password Reset
+      operationId: confirmPasswordReset
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmPWResetRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfirmPWResetResponse'
+  /v2/login:
+    post:
+      tags:
+        - User
+      summary: Login api
+      operationId: login
+      description: Either use listId or Email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/LoginResponseUser'
+                  - $ref: '#/components/schemas/LoginResponseEvent'
+  /v2/articles/{id}:
+    post:
+      tags:
+        - Article
+      summary: Get Article
+      operationId: getArticle
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleGetRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleGetResponse'
+  /v2/lists/articles/{id}:
+    get:
+      tags:
+        - List
+      summary: Get Articles in List
+      operationId: getArticleList
+      security:
+        - bearerAuth: [list]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleGetResponse'
+    delete:
+      tags:
+        - List
+      summary: Delete an Article from a List
+      operationId: deleteArticle
+      security:
+        - bearerAuth: [list]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWrapperResponse'
+  /v2/lists/articles:
+    post:
+      tags:
+        - List
+      summary: Create/update Article in List
+      operationId: createUpdateArticle
+      security:
+        - bearerAuth: [list]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ArticleRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWrapperResponse'
+  /v2/lists/labels:
+    post:
+      tags:
+        - List
+      summary: Create Labels in Lists
+      operationId: getLabels
+      security:
+        - bearerAuth: [list]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LabelRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/lists/stickylabels:
+    post:
+      tags:
+        - List
+      summary: Create Sticky Labels
+      operationId: getStickyLabels
+      security:
+        - bearerAuth: [list]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StickyLabelRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/lists/pdfList/{lang}:
+    get:
+      tags:
+        - List
+      summary: Get PDF List by Language
+      operationId: getListPdf
+      security:
+        - bearerAuth: [list]
+      parameters:
+        - name: lang
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/lists/pdfListOverview/{lang}:
+    get:
+      tags:
+        - List
+      summary: Get PDF List Overview
+      operationId: getListOverviewPdf
+      security:
+        - bearerAuth: [list]
+      parameters:
+        - name: lang
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/lists/logout:
+    get:
+      tags:
+        - List
+      summary: Log Out of List
+      operationId: logut
+      security:
+        - bearerAuth: [list]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/lists:
+    get:
+      tags:
+        - List
+      summary: Get Lists
+      operationId: getList
+      security:
+        - bearerAuth: [list]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWrapperResponse'
+  /v2/lists/full:
+    get:
+      tags:
+        - List
+      summary: Retrieve Full Lists
+      operationId: getFullList
+      security:
+        - bearerAuth: [list]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListWrapperResponse'
+  /v2/lists/surround:
+    get:
+      tags:
+        - List
+      summary: Get Surround Lists
+      operationId: getSurroundingListNumbers
+      security:
+        - bearerAuth: [list]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListsSurroundResponse'
+  /v2/lists/connect:
+    post:
+      tags:
+        - List
+      summary: Create List Connection
+      operationId: createListConnection
+      security:
+        - bearerAuth: [list]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectListRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectListResponse'
+  /v2/lists/disconnect:
+    post:
+      tags:
+        - List
+      summary: Disconnect Lists
+      operationId: deleteListConnection
+      security:
+        - bearerAuth: [list]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectListRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConnectListResponse'
+  /v2/lists/statistics:
+    get:
+      tags:
+        - List
+      summary: Get List Statistics
+      operationId: getListStatistics
+      security:
+        - bearerAuth: [list]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListStatisticsResponse'
+                
+  /v2/users/logout:
+    post:
+      tags:
+        - User
+      summary: Log Out User
+      operationId: logout
+      security:
+        - bearerAuth: [user]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                listToken:
+                  type: string
+              type: object
+              required:
+                - listToken
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/users/list/{id}:
+    delete:
+      tags:
+        - User
+      summary: Remove list from user account
+      operationId: removeList
+      security:
+        - bearerAuth: [user]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/users/list:
+    post:
+      tags:
+        - User
+      summary: Add list to user account
+      operationId: addList
+      security:
+        - bearerAuth: [user]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserListAddRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserListAddResponse'
+  /v2/users/changeList/{id}:
+    get:
+      tags:
+        - User
+      summary: Get other List from a User. Not changing the selected list.
+      operationId: getOtherList
+      security:
+        - bearerAuth: [user]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserChangeListResponse'
+    post:
+      tags:
+        - User
+      summary: Change List for a User
+      operationId: changeList
+      security:
+        - bearerAuth: [user]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                listToken:
+                  type: string
+              type: object
+              required:
+                - listToken
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserChangeListResponse'
+  /v2/users/host/{id}:
+    get:
+      tags:
+        - User
+      summary: Add User Host Information
+      operationId: addHost
+      security:
+        - bearerAuth: [user]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserHostResponse'
+    delete:
+      tags:
+        - User
+      summary: Delete Host from user
+      operationId: removeHost
+      security:
+        - bearerAuth: [user]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserHostResponse'
+  /v2/users:
+    get:
+      tags:
+        - User
+      summary: Get Users
+      operationId: getUser
+      security:
+        - bearerAuth: [user]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+    put:
+      tags:
+        - User
+      summary: Update User
+      operationId: updateUser
+      security:
+        - bearerAuth: [user]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserSaveRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+  /v2/admin/events/articles:
+    get:
+      tags:
+        - EventAdmin
+      security:
+        - bearerAuth: [event]
+      summary: Get Event Articles
+      operationId: getAllArticlesEvent
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleListResponse'
+  /v2/admin/events/articleExport:
+    get:
+      tags:
+        - EventAdmin
+      summary: Export Article Events Data
+      operationId: exportArticles
+      security:
+        - bearerAuth: [event]
+      responses:
+        '200':
+          description: ''
+          content:
+            text/csv; charset=utf-8:
+              schema:
+                type: string
+  /v2/admin/events/activate:
+    get:
+      tags:
+        - EventAdmin
+      security:
+        - bearerAuth: [event]
+      summary: Activate Events
+      operationId: activate
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFullResponse'
+  /v2/admin/events/cancel:
+    post:
+      tags:
+        - EventAdmin
+      summary: Take back bought article
+      operationId: cancelBoughtArticle
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              required:
+                - article
+                - cashpoint
+              properties:
+                article:
+                  type: string
+                cashpoint:
+                  type: string
+                password:
+                  type: string
+              type: object
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CancelArticleResponse'
+  /v2/admin/events/pay:
+    post:
+      tags:
+        - EventAdmin
+      summary: Create Admin Event Payment
+      operationId: payArticles
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PayResponse'
+  /v2/admin/events/payout:
+    post:
+      tags:
+        - EventAdmin
+      summary: Mark a list as payout
+      operationId: payoutList
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/PayoutRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataNullableResponse'
+  /v2/admin/events/pdf:
+    get:
+      tags:
+        - EventAdmin
+      summary: Download Event PDF
+      operationId: getEventPdf
+      security:
+        - bearerAuth: [event]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events/pdfList/{idsString}:
+    get:
+      tags:
+        - EventAdmin
+      summary: Download Event PDFs
+      operationId: getListPdfEvent
+      security:
+        - bearerAuth: [event]
+      parameters:
+        - name: idsString
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events/pdfListOverview/{idsString}:
+    get:
+      tags:
+        - EventAdmin
+      summary: Get PDF Event List Overview
+      operationId: getListOverviewPdfEvent
+      security:
+        - bearerAuth: [event]
+      parameters:
+        - name: idsString
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events/pdfList:
+    get:
+      tags:
+        - EventAdmin
+      summary: Get PDF all Lists
+      operationId: getAllListPdf
+      security:
+        - bearerAuth: [event]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events/pdfListOverview:
+    get:
+      tags:
+        - EventAdmin
+      summary: Get PDF all List Overview
+      operationId: getAllListOverviewPdf
+      security:
+        - bearerAuth: [event]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events/mail:
+    post:
+      tags:
+        - EventAdmin
+      summary: Send Event Email
+      operationId: sendMail
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmailResponse'
+  /v2/admin/events/createList:
+    post:
+      tags:
+        - EventAdmin
+      summary: Create Events List
+      operationId: createLists
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+                $ref: '#/components/schemas/CreateListRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/admin/events:
+    put:
+      tags:
+        - EventAdmin
+      summary: Update Event
+      operationId: updateEvent
+      security:
+        - bearerAuth: [event]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFullResponse'
+  /v2/events:
+    get:
+      tags:
+        - Event
+      summary: Get Events
+      operationId: get
+      security:
+        - bearerAuth: [event_helper,event]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFullResponse'
+  /v2/events/analyze:
+    get:
+      tags:
+        - Event
+      summary: Get Event Analysis
+      operationId: getAnalysis
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyzeResponse'
+  /v2/events/statistics:
+    get:
+      tags:
+        - Event
+      summary: Get Event Statistics
+      operationId: getStatistics
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventStatisticsResponse'
+  /v2/events/lists/fetch:
+    get:
+      tags:
+        - Event
+      summary: Get Fetch Event List
+      operationId: fetchList
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FetchResponse'
+  /v2/events/maci:
+    get:
+      tags:
+        - Event
+      summary: Get missing articles for checkIn
+      operationId: getMissingArticlesCheckIn
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingArticleResponse'
+  /v2/events/maco:
+    get:
+      tags:
+        - Event
+      summary: Get missing articles for checkOut
+      operationId: getMissingArticlesCheckOut
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MissingArticleResponse'
+  /v2/events/plates:
+    post:
+      tags:
+        - Event
+      summary: Create Plate Event
+      operationId: getPlatesPdf
+      security:
+        - bearerAuth: [event,event_helper]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatesRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /v2/events/lists:
+    post:
+      tags:
+        - Event
+      summary: Different actions for List
+      operationId: listAction
+      security:
+        - bearerAuth: [event,event_helper]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventListRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/EventListResponse'
+                  - $ref: '#/components/schemas/EventListAnalyseResponse'
+  /v2/events/articles/{id}:
+    get:
+      tags:
+        - Event
+      summary: Get Event Articles
+      operationId: getArticleEvent
+      security:
+        - bearerAuth: [event,event_helper]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventArticleResponse'
+  /v2/events/checkX:
+    post:
+      tags:
+        - Event
+      summary: CheckIn/Out Articles
+      operationId: checkX
+      security:
+        - bearerAuth: [event,event_helper]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/CheckXListRequest'
+                - $ref: '#/components/schemas/CheckXArticleRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/CheckXListResponse'
+                  - $ref: '#/components/schemas/CheckXListDetailResponse'
+  /v2/events/{cashpoint}:
+    get:
+      tags:
+        - Event
+      summary: Fetch Cash Point Events
+      operationId: getSummaryForCashpoint
+      security:
+        - bearerAuth: [event,event_helper]
+      parameters:
+        - name: cashpoint
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFullResponse'
+  /v2/events/logout:
+    get:
+      tags:
+        - Event
+      summary: Logout Events
+      operationId: logoutEvent
+      security:
+        - bearerAuth: [event,event_helper]
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventFullResponse'
+  /v2/findEvent:
+    get:
+      tags:
+        - Common
+      summary: Find upcoming events
+      operationId: findEvent
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+  /v2/findOnline:
+    get:
+      tags:
+        - Common
+      summary: Find events who provide lists online 
+      operationId: findOnlineLists
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+  /v2/findHost:
+    get:
+      tags:
+        - Common
+      summary: Find Host (Seems not working, need to check if want to use)
+      operationId: findHost
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+  /v2/masterData:
+    get:
+      tags:
+        - Common
+      summary: Fetch Master Data
+      operationId: getMasterdata
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MasterDataResponse'
+                
+  /v2/masterData/sizes:
+    get:
+      tags:
+        - Common
+      summary: Retrieve Master Data Sizes
+      operationId: getSizes
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SizeResponse'
+  /v2/masterData/sizeCategories:
+    get:
+      tags:
+        - Common
+      summary: Get Size Categories
+      operationId: getSizeCategories
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SizeCategoryResponse'
+  /v2/masterData/categories:
+    get:
+      tags:
+        - Common
+      summary: Get Master Data Categories
+      operationId: getCategories
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResponse'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    MasterDataResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/MasterDataResponseData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    MasterDataResponseData:
+      type: object
+      properties:
+        sizes:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Size'
+        sizeCategories:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SizeCategory'
+        categories:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CategoryItem'
+      required:
+        - sizes
+        - sizeCategories
+        - categories
+    SizeResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/Size'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    SizeCategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SizeCategory'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    CategoryResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/CategoryItem'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    SizeCategory:
+      type: object
+      additionalProperties:
+        $ref: '#/components/schemas/Size'
+    Size:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        size_category:
+          type: integer
+          format: int32
+        size:
+          type: string
+        sort:
+          type: integer
+          format: int32
+      required:
+        - id
+        - size_category
+        - size
+        - sort
+    CategoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        category:
+          type: string
+        size_category:
+          type: integer
+          format: int32
+          nullable: true
+      required:
+        - id
+        - category
+        - size_category
+    LoginRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        password:
+          type: string
+        mode:
+          type: string
+          enum:
+            - list
+            - user
+            - event
+      required:
+        - id
+        - password
+        - mode
+    LoginResponseUser:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/LoginResponseUserData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    LoginResponseUserData:
+      type: object
+      properties:
+        userToken:
+          type: string
+        user:
+          $ref: '#/components/schemas/User'
+        listToken:
+          type: string
+        list:
+          $ref: '#/components/schemas/ListWrapper'
+      required:
+        - user
+        - userToken
+        - list
+        - listToken
+    User:
+      type: object
+      required:
+        - id
+        - salutation
+        - firstname
+        - lastname
+        - email
+      properties:
+        id:
+          type: integer
+          format: int32
+        salutation:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+        newsletter:
+          type: integer
+          format: int32
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        password:
+          type: string
+        password_confirmation:
+          type: string
+        lat:
+          nullable: true
+          type: number
+          format: double
+        long:
+          nullable: true
+          type: number
+          format: double
+        radius:
+          type: integer
+          format: int32
+        disabled:
+          type: integer
+          format: int32
+        search_agent:
+          type: integer
+          format: int32
+        listing_id:
+          type: integer
+          format: int32
+        phone:
+          type: string
+        lang:
+          type: string
+        needPhone:
+          type: boolean
+        listWrapper:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListWrapper'
+        list:
+          $ref: '#/components/schemas/List'
+        hosts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Host'
+    ListWrapper:
+      type: object
+      properties:
+        lists:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/List'
+        id: 
+          type: integer
+          format: int32
+        timezone:
+          type: string
+        articleCount:
+          type: integer
+          format: int32
+        articleCountSold:
+          type: integer
+          format: int32
+        sales:
+          type: number
+          format: double
+        sellFees:
+          type: number
+          format: double
+        list_price:
+          type: integer
+          format: int32
+        payoutAmount:
+          type: number
+          format: double
+        canBeModified:
+          type: string
+        updated_at:
+          type: string
+          format: date-time
+        event:
+          $ref: '#/components/schemas/Event'
+      required:
+        - lists
+        - id
+        - timezone
+        - articleCount
+        - articleCountSold
+        - sales
+        - sellFees
+        - list_price
+        - payoutAmount
+        - canBeModified
+        - updated_at
+        - event
+    Event:
+      type: object
+      required:
+        - id
+        - email
+        - show_phone
+        - name
+        - address
+        - zipcode
+        - city
+        - country
+        - start_time
+        - end_time
+        - start_time_disposal
+        - end_time_disposal
+        - start_time_pickup
+        - end_time_pickup
+        - sell_fee
+        - buy_fee
+        - list_price
+        - articles_per_list
+        - max_online_lists
+        - max_lists_per_person
+        - host_id
+        - click_collect
+        - max_article_reservation
+        - max_reservation_user
+        - price_step
+        - pay_list_after
+        - categories_sizes
+        - restrictions
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        show_phone:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        start_time_disposal:
+          type: string
+          format: date-time
+        end_time_disposal:
+          type: string
+          format: date-time
+        start_time_pickup:
+          type: string
+          format: date-time
+        end_time_pickup:
+          type: string
+          format: date-time
+        sell_fee:
+          type: integer
+        buy_fee:
+          type: integer
+        list_price:
+          type: integer
+        articles_per_list:
+          type: integer
+        force_mail:
+          type: integer
+        force_phone:
+          type: integer
+        max_online_lists:
+          type: integer
+        max_lists_per_person:
+          type: integer
+        host_id:
+          type: integer
+        comment:
+          type: string
+        comment_seller:
+          type: string
+        click_collect:
+          type: integer
+        max_article_reservation:
+          type: integer
+        max_reservation_user:
+          type: integer
+        price_step:
+          type: string
+        countListsOnline:  
+          type: integer
+        pay_list_after:
+          type: integer
+        categories_sizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySize'
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+    CategorySize:
+      type: object
+      required:
+        - event_id
+        - categorie_id
+        - start_sort
+        - end_sort
+      properties:
+        event_id:
+          type: integer
+        categorie_id:
+          type: integer
+        start_sort:
+          type: integer
+        end_sort:
+          type: integer
+    Restriction:
+      type: object
+      required:
+        - id
+        - event_id
+        - categorie_id
+        - limit
+      properties:
+        id:
+          type: integer
+        event_id:
+          type: integer
+        categorie_id:
+          type: integer
+        limit:
+          type: integer
+    List:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+        external_id:
+          type: integer
+          format: int32
+        event_id:
+          type: integer
+          format: int32
+        list_price:
+          type: string
+        sell_fee:
+          type: integer
+          format: int32
+        is_online_list:
+          type: integer
+          format: int32
+        disposal_time:
+          type: string
+          format: date-time
+          nullable: true
+        payed_time:
+          type: string
+          format: date-time
+          nullable: true
+        checkin_time:
+          type: string
+          format: date-time
+          nullable: true
+        checkout_time:
+          type: string
+          format: date-time
+          nullable: true
+        payed_out_time:
+          type: string
+          format: date-time
+          nullable: true
+        payed_cashpoint:
+          type: integer
+          format: int32
+          nullable: true
+        payed_out_cashpoint:
+          type: integer
+          format: int32
+          nullable: true
+        fetcher:
+          type: integer
+          nullable: true
+        fetch_cashpoint:
+          type: integer
+          nullable: true
+        fetch_time_end:
+          type: string
+          format: date-time
+          nullable: true
+        fetch_time_start:
+          type: string
+          format: date-time
+          nullable: true
+        refund_time:
+          type: string
+          format: date-time
+          nullable: true
+        refund_cashpoint:
+          type: integer
+          format: int32
+          nullable: true
+        dispose_time_seller:
+          type: string
+          format: date-time
+          nullable: true
+        refund_time_seller:
+          type: string
+          format: date-time
+          nullable: true
+        pivot:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              format: int32
+            listing_id:
+              type: integer
+              format: int32
+          nullable: true
+        list_connection:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int32
+            listing_id:
+              type: integer
+              format: int32
+          nullable: true
+        articles:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+        user:
+          $ref: '#/components/schemas/User'
+      required:
+        - id
+        - external_id
+        - event_id
+        - list_price
+        - sell_fee
+        - is_online_list
+        - disposal_time
+        - payed_time
+        - checkin_time
+        - checkout_time
+        - payed_out_time
+        - payed_cashpoint
+        - payed_out_cashpoint
+        - fetcher
+        - fetch_cashpoint
+        - fetch_time_end
+        - fetch_time_start
+        - refund_time
+        - refund_cashpoint
+        - dispose_time_seller
+        - refund_time_seller
+    Host:
+      type: object
+      required:
+        - host_id
+        - name
+        - city
+        - categories_sizes
+        - restrictions
+      properties:
+        host_id:
+          type: integer
+        name:
+          type: string
+        city:
+          type: string
+        pivot:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              format: int32
+            host_id:
+              type: integer
+              format: int32
+          nullable: true
+        categories_sizes:
+          type: array
+          items: 
+            $ref: '#/components/schemas/CategorySize'
+        restrictions:
+          type: array
+          items: 
+            $ref: '#/components/schemas/Restriction'
+    Article:
+      type: object
+      required:
+        - id
+        - listing_id
+        - description
+        - category_id
+        - gender
+        - price
+        - updated_at
+        - canBeModified
+        - images
+      properties:
+        id:
+          type: integer
+        listing_id:
+          type: integer
+        description:
+          type: string
+        category_id:
+          type: integer
+        size_id:
+          type: integer
+          nullable: true
+        gender:
+          type: string
+        price:
+          type: string
+        invoice_id:
+          type: integer
+          nullable: true
+        time_checkin:
+          type: string
+          format: date-time
+          nullable: true
+        time_checkout:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+        canBeModified:
+          type: boolean
+        images:
+          type: array
+          items: {}
+        list:
+          type: object
+          required:
+            - id
+            - payed_out_time
+            - event_id
+          properties:
+            id:
+              type: integer
+            event_id:
+              type: integer
+            payed_out_time:
+              type: string
+              format: date-time
+              nullable: true
+    RegisterRequest:
+      type: object
+      required:
+        - salutation
+        - newsletter
+        - needPhone
+        - search_agent
+        - firstname
+        - lastname
+        - email
+        - password
+        - password_confirmation
+      properties:
+        salutation:
+          type: string
+        newsletter:
+          type: boolean
+        needPhone:
+          type: boolean
+        search_agent:
+          type: boolean
+        firstname:
+          type: string
+        lastname:
+          type: string
+        email:
+          type: string
+          format: email
+        phone:
+          type: string
+          nullable: true
+        password:
+          type: string
+        password_confirmation:
+          type: string
+    RegisterResponse:
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/User'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    ConfirmationResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/User'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    PasswordResetRequest:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+    DataNullableResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          nullable: true
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    ConfirmPWResetRequest:
+      type: object
+      required:
+        - secret
+        - password
+        - password_confirmation
+      properties:
+        secret:
+          type: string
+        password:
+          type: string
+        password_confirmation:
+          type: string
+    ConfirmPWResetResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/User'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: false
+          type: object
+        apiVersion:
+          type: integer
+    UserListAddRequest:
+      type: object
+      required:
+        - id
+        - password
+      properties:
+        id:
+          type: integer
+        password:
+          type: string
+    UserListAddResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ListWrapper'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: false
+          type: object
+        apiVersion:
+          type: integer
+    UserSaveRequest:
+      type: object
+      properties:
+        city:
+          type: string
+        country:
+          type: string
+        zipcode:
+          type: string
+        lat:
+          nullable: true
+          type: number
+          format: double
+        long:
+          nullable: true
+          type: number
+          format: double
+        radius:
+          type: integer
+        search_agent:
+          type: boolean
+      required:
+        - city
+        - country
+        - zipcode
+        - radius
+        - search_agent
+    UserResponse:
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/User'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    UserHostResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Host'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    RequestListsCheckRequest:
+      type: object
+      properties:
+        event_id:
+          type: integer
+        email:
+          type: string
+      required:
+        - event_id
+        - email
+    RequestListsCheckResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/RequestListsCheckData'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+          type: object
+        apiVersion:
+          type: integer
+    RequestListsCheckData:
+      type: object
+      required:
+        - countLists
+        - registered
+        - hasPhone
+        - sub
+      properties:
+        countLists:
+          type: integer
+        registered:
+          type: boolean
+        hasPhone:
+          type: boolean
+        sub:
+          type: boolean
+    RequestListsRequest:
+      type: object
+      properties:
+        salutation:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        firstname:
+          type: string
+        lastname:
+          type: string
+        password_confirmation:
+          type: string
+        phone:
+          type: string
+        event_id:
+          type: integer
+        count:
+          type: integer
+        sub:
+          type: boolean
+      required:
+        - salutation
+        - email
+        - event_id
+        - count
+        - sub
+    UserChangeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/UserChangeListResponseData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    UserChangeListResponseData:
+      type: object
+      properties:
+        listToken:
+          type: string
+        list:
+          $ref: '#/components/schemas/ListWrapper'
+      required:
+        - listToken
+        - list
+    GetUserChangeListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/GetUserChangeListResponseData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    GetUserChangeListResponseData:
+      type: object
+      properties:
+        list:
+          $ref: '#/components/schemas/ListWrapper'
+      required:
+        - list
+    ListStatisticsResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventStatistics'
+      required:
+        - success
+        - responseCode
+        - messageObjects
+        - apiVersion
+        - data
+    EventStatistics:
+      type: object
+      properties:
+        event_name:
+          type: string
+        city:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        event_id:
+          type: integer
+        overall:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryStatistics'
+        overall_gender:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenderCategoryStatistics'
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/SizeCategoryStatistics'
+        detail_gender:
+          type: array
+          items:
+            $ref: '#/components/schemas/GenderSizeCategoryStatistics'
+      required:
+        - event_name
+        - city
+        - start_time
+        - event_id
+        - overall
+        - overall_gender
+        - detail
+        - detail_gender
+    CategoryStatistics:
+      type: object
+      properties:
+        category_id:
+          type: integer
+        sold:
+          type: integer
+        total:
+          type: integer
+        percentage:
+          type: number
+          nullable: true
+      required:
+        - category_id
+        - sold
+        - total
+    GenderCategoryStatistics:
+      type: object
+      properties:
+        category_id:
+          type: integer
+        gender:
+          type: string
+        sold:
+          type: integer
+        total:
+          type: integer
+        percentage:
+          type: number
+          nullable: true
+      required:
+        - category_id
+        - gender
+        - sold
+        - total
+    SizeCategoryStatistics:
+      type: object
+      properties:
+        size_id:
+          type: integer
+        category_id:
+          type: integer
+        sold:
+          type: integer
+        total:
+          type: integer
+        percentage:
+          type: number
+          nullable: true
+      required:
+        - size_id
+        - category_id
+        - sold
+        - total
+    GenderSizeCategoryStatistics:
+      type: object
+      properties:
+        size_id:
+          type: integer
+        category_id:
+          type: integer
+        gender:
+          type: string
+        sold:
+          type: integer
+        total:
+          type: integer
+        percentage:
+          type: number
+          nullable: true
+      required:
+        - size_id
+        - category_id
+        - gender
+        - sold
+        - total
+    ArticleRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        gender:
+          type: string
+        category_id:
+          type: integer
+        size_id:
+          type: integer
+        description:
+          type: string
+        price:
+          type: number
+      required:
+        - gender
+        - category_id
+        - size_id
+        - description
+        - price
+    ListWrapperResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ListWrapper'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    LabelRequest:
+      type: object
+      required:
+        - articles
+      properties:
+        articles:
+          type: string
+    StickyLabelRequest:
+      type: object
+      required:
+        - articles
+        - row
+        - column
+        - corRow
+        - corCol
+      properties:
+        articles:
+          type: string
+        row:
+          type: integer
+        column:
+          type: integer
+        corRow:
+          type: integer
+        corCol:
+          type: integer
+    ConnectListRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        password:
+          type: string
+        userToken:
+          type: string
+      required:
+        - id
+        - userToken
+    ConnectListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ConnectListResponseData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    ConnectListResponseData:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        list:
+          $ref: '#/components/schemas/ListWrapper'
+      required:
+        - list
+        - user
+    ListsSurroundResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            prev:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/SurroundObject'
+            next:
+              nullable: true
+              allOf:
+                - $ref: '#/components/schemas/SurroundObject'
+        responseCode:
+          type: string
+        messageObjects:
+          nullable: true
+        apiVersion:
+          type: integer
+      required:
+        - success
+        - data
+        - responseCode
+        - apiVersion
+
+    SurroundObject:
+      type: object
+      properties:
+        id:
+          type: integer
+        external_id:
+          type: integer
+        external_ids:
+          type: integer
+      required:
+        - id
+        - external_id
+        - external_ids
+    EventFullResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/EventFull'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    EventFull:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        lat:
+          type: string
+        long:
+          type: string
+        email:
+          type: string
+        show_email_public:
+          type: integer
+        show_phone:
+          type: integer
+        host_id:
+          type: integer
+        active:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        start_time_disposal:
+          type: string
+          format: date-time
+        end_time_disposal:
+          type: string
+          format: date-time
+        start_time_pickup:
+          type: string
+          format: date-time
+        end_time_pickup:
+          type: string
+          format: date-time
+        articles_per_list:
+          type: integer
+        sell_fee:
+          type: integer
+        buy_fee:
+          type: integer
+        list_price:
+          type: integer
+        max_lists:
+          type: integer
+        fixed_max_lists:
+          type: integer
+        max_online_lists:
+          type: integer
+        max_lists_per_person:
+          type: integer
+        start_time_sell:
+          type: string
+          format: date-time
+        end_time_sell:
+          type: string
+          format: date-time
+        show_article:
+          type: integer
+        show_sold:
+          type: integer
+        single_check_in:
+          type: integer
+        single_check_out:
+          type: integer
+        pay_list_after:
+          type: integer
+        online_mode:
+          type: integer
+        show_payed:
+          type: integer
+        event_class:
+          type: integer
+        price_step:
+          type: string
+        count_rooms:
+          type: integer
+        lists_per_room:
+          type: integer
+        force_mail:
+          type: integer
+        force_phone:
+          type: integer
+        max_visitors:
+          type: integer
+        click_collect:
+          type: integer
+        isAdmin:
+          type: boolean
+        countArticles:
+          type: integer
+        countArticlesCI:
+          type: integer
+        countArticlesCO:
+          type: integer
+        countArticlesSold:
+          type: integer
+        countListsOnline:
+          type: integer
+        countLists:
+          type: integer
+        countListsDisposal:
+          type: integer
+        countListsPayed:
+          type: integer
+        countListsCI:
+          type: integer
+        countListsCO:
+          type: integer
+        countListsPayedOut:
+          type: integer
+        countListsRefund:
+          type: integer
+        countListsWOArticles:
+          type: integer
+        countListsWArticles:
+          type: integer
+        sales:
+          type: integer
+        amountPayedOut:
+          type: integer
+        cashPosition:
+          type: integer
+        incomeLists:
+          type: integer
+        incomeBuyer:
+          type: integer
+        incomeSeller:
+          type: integer
+        userCount:
+          type: integer
+        userCountWOA:
+          type: integer
+        currentVisitors:
+          type: integer
+        categories_sizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySize'
+        password: 
+          type: string
+        password_confirmation:
+          type: string
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+      required:
+        - id
+        - name
+        - address
+        - zipcode
+        - city
+        - country
+        - lat
+        - long
+        - email
+        - show_email_public
+        - show_phone
+        - host_id
+        - active
+        - start_time
+        - end_time
+        - start_time_disposal
+        - end_time_disposal
+        - start_time_pickup
+        - end_time_pickup
+        - articles_per_list
+        - sell_fee
+        - buy_fee
+        - list_price
+        - max_lists
+        - fixed_max_lists
+        - max_online_lists
+        - max_lists_per_person
+        - start_time_sell
+        - end_time_sell
+        - show_article
+        - show_sold
+        - single_check_in
+        - single_check_out
+        - pay_list_after
+        - online_mode
+        - show_payed
+        - event_class
+        - price_step
+        - count_rooms
+        - lists_per_room
+        - force_mail
+        - force_phone
+        - max_visitors
+        - click_collect
+        - isAdmin
+        - countArticles
+        - countArticlesCI
+        - countArticlesCO
+        - countArticlesSold
+        - countListsOnline
+        - countLists
+        - countListsDisposal
+        - countListsPayed
+        - countListsCI
+        - countListsCO
+        - countListsPayedOut
+        - countListsRefund
+        - countListsWOArticles
+        - countListsWArticles
+        - sales
+        - amountPayedOut
+        - cashPosition
+        - incomeLists
+        - incomeBuyer
+        - incomeSeller
+        - userCount
+        - userCountWOA
+        - currentVisitors
+        - categories_sizes
+        - restrictions
+    LoginResponseEvent:
+      type: object
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/LoginResponseEventData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+          format: int32
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+    LoginResponseEventData:
+      type: object
+      properties:
+        eventToken:
+          type: string
+        event:
+          $ref: '#/components/schemas/EventFull'
+      required:
+        - eventToken
+        - event
+    EventRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        address:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        lat:
+          type: string
+        long:
+          type: string
+        email:
+          type: string
+        show_email_public:
+          type: integer
+        show_phone:
+          type: integer
+        host_id:
+          type: integer
+        active:
+          type: integer
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        start_time_disposal:
+          type: string
+          format: date-time
+        end_time_disposal:
+          type: string
+          format: date-time
+        start_time_pickup:
+          type: string
+          format: date-time
+        end_time_pickup:
+          type: string
+          format: date-time
+        articles_per_list:
+          type: integer
+        sell_fee:
+          type: integer
+        buy_fee:
+          type: integer
+        list_price:
+          type: integer
+        max_lists:
+          type: integer
+        fixed_max_lists:
+          type: integer
+        max_online_lists:
+          type: integer
+        max_lists_per_person:
+          type: integer
+        start_time_sell:
+          type: string
+          format: date-time
+        end_time_sell:
+          type: string
+          format: date-time
+        show_article:
+          type: integer
+        show_sold:
+          type: integer
+        single_check_in:
+          type: integer
+        single_check_out:
+          type: integer
+        pay_list_after:
+          type: integer
+        online_mode:
+          type: integer
+        show_payed:
+          type: integer
+        price_step:
+          type: string
+        count_rooms:
+          type: integer
+        lists_per_room:
+          type: integer
+        force_mail:
+          type: integer
+        force_phone:
+          type: integer
+        max_visitors:
+          type: integer
+        click_collect:
+          type: integer
+        categories_sizes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategorySize'
+        password: 
+          type: string
+        password_confirmation:
+          type: string
+        restrictions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Restriction'
+    CreateListRequest:
+      type: object
+      required:
+        - count
+        - sell_fee
+        - list_price
+        - dispose
+      properties:
+        count:
+          type: integer
+        sell_fee:
+          type: integer
+        list_price:
+          type: integer
+        dispose:
+          type: boolean
+    EmailRequest:
+      type: object
+      required:
+        - subject
+        - mail
+        - all
+      properties:
+        subject:
+          type: string
+        mail:
+          type: string
+        all:
+          type: integer
+    EmailResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: integer
+          description: "Number of sent emails"
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    AnalyzeResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/DataItem'
+        responseCode:
+          type: string
+        messageObjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageObject'
+        apiVersion:
+          type: integer
+
+    DataItem:
+      type: object
+      required:
+        - category_id
+        - num
+      properties:
+        size_id:
+          type: integer
+          nullable: true
+        category_id:
+          type: integer
+        num:
+          type: integer
+
+    MessageObject:
+      type: object
+      required:
+        - category_id
+        - num
+      properties:
+        category_id:
+          type: integer
+        num:
+          type: integer
+    PlatesRequest:
+      type: object
+      required:
+        - min
+        - max
+      properties:
+        min:
+          type: integer
+        max:
+          type: integer
+    EventStatisticsResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - apiVersion
+        - messageObjects
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventStatisticsData'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    EventStatisticsData:
+      type: object
+      required:
+        - event_name
+        - city
+        - start_time
+        - event_id
+        - overall
+        - overall_gender
+        - detail
+        - detail_gender
+        - avgLPU
+        - listDisposalStats
+        - articleCreationStats
+        - articleSoldStats
+        - avgSalesPerUser
+        - avgSoldArticelsPerUser
+        - invAvgSales
+        - invMaxSales
+        - invAvgArticles
+        - invMaxArticles
+        - invCount
+        - avgPriceArticle
+        - countArticles
+        - countArticlesCI
+        - countArticlesCO
+        - countArticlesSold
+        - countListsOnline
+        - countLists
+        - countListsDisposal
+        - countListsPayed
+        - countListsCI
+        - countListsCO
+        - countListsPayedOut
+        - countListsRefund
+        - countListsWOArticles
+        - countListsWArticles
+        - sales
+        - amountPayedOut
+        - incomeLists
+        - incomeBuyer
+        - incomeSeller
+        - incomeTotal
+        - userCount
+        - userCountWOA
+        - max_lists
+        - max_online_lists
+        - max_lists_per_person
+        - avgPriceArticleSold
+        - avgSalesPerList
+        - avgSoldArticelsPerList
+      properties:
+        event_name:
+          type: string
+        city:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        event_id:
+          type: integer
+        overall:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryStats'
+        overall_gender:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryGenderStats'
+        detail:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryStats'
+        detail_gender:
+          type: array
+          items:
+            $ref: '#/components/schemas/CategoryGenderStats'
+        avgLPU:
+          type: number
+        listDisposalStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListDisposalStats'
+        articleCreationStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleCreationStats'
+        articleSoldStats:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleSoldStats'
+        avgSalesPerUser:
+          type: number
+        avgSoldArticelsPerUser:
+          type: number
+        invAvgSales:
+          type: number
+        invMaxSales:
+          type: number
+        invAvgArticles:
+          type: number
+        invMaxArticles:
+          type: integer
+        invCount:
+          type: integer
+        avgPriceArticle:
+          type: number
+        countArticles:
+          type: integer
+        countArticlesCI:
+          type: integer
+        countArticlesCO:
+          type: integer
+        countArticlesSold:
+          type: integer
+        countListsOnline:
+          type: integer
+        countLists:
+          type: integer
+        countListsDisposal:
+          type: integer
+        countListsPayed:
+          type: integer
+        countListsCI:
+          type: integer
+        countListsCO:
+          type: integer
+        countListsPayedOut:
+          type: integer
+        countListsRefund:
+          type: integer
+        countListsWOArticles:
+          type: integer
+        countListsWArticles:
+          type: integer
+        sales:
+          type: number
+        amountPayedOut:
+          type: number
+        incomeLists:
+          type: number
+        incomeBuyer:
+          type: number
+        incomeSeller:
+          type: number
+        incomeTotal:
+          type: number
+        userCount:
+          type: integer
+        userCountWOA:
+          type: integer
+        max_lists:
+          type: integer
+        max_online_lists:
+          type: integer
+        max_lists_per_person:
+          type: integer
+        avgPriceArticleSold:
+          type: number
+        avgSalesPerList:
+          type: number
+        avgSoldArticelsPerList:
+          type: number
+    CategoryStats:
+      type: object
+      required:
+        - category_id
+        - sold
+        - total
+        - total_sale
+        - sale
+        - percentage
+      properties:
+        category_id:
+          type: integer
+        sold:
+          type: integer
+        total:
+          type: integer
+        total_sale:
+          type: string
+        sale:
+          type: string
+        percentage:
+          type: string
+    CategoryGenderStats:
+      type: object
+      required:
+        - category_id
+        - gender
+        - sold
+        - total
+        - total_sale
+        - sale
+        - percentage
+      properties:
+        category_id:
+          type: integer
+        gender:
+          type: string
+        sold:
+          type: integer
+        total:
+          type: integer
+        total_sale:
+          type: string
+        sale:
+          type: string
+        percentage:
+          type: string
+    ListDisposalStats:
+      type: object
+      required:
+        - time_diff
+        - lists
+      properties:
+        time_diff:
+          type: integer
+        lists:
+          type: integer
+    ArticleCreationStats:
+      type: object
+      required:
+        - time_diff
+        - articles
+      properties:
+        time_diff:
+          type: integer
+        articles:
+          type: integer
+    ArticleSoldStats:
+      type: object
+      required:
+        - time_diff
+        - customer
+        - articles
+        - sales
+      properties:
+        time_diff:
+          type: string
+        customer:
+          type: integer
+        articles:
+          type: integer
+        sales:
+          type: string
+    EventListResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/ListWrapper'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    EventListRequest:
+      type: object
+      required:
+        - action
+        - article
+        - id
+        - idType
+      properties:
+        action:
+          type: string
+          enum:
+            - get
+            - analyze
+            - dispose
+            - payed
+            - checkIn
+            - checkOut
+            - payed_out
+            - refund
+            - requestFetch
+            - fetch
+            - fetchDone
+        article:
+          type: boolean
+        id:
+          type: integer
+        idType:
+          type: string
+          enum:
+            - ext
+            - int
+        fetcher:
+          type: string
+    EventListAnalyseResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            required:
+              - size_id
+              - category_id
+              - num
+            properties:
+              size_id:
+                type: integer
+                nullable: true
+              category_id:
+                type: integer
+              num:
+                type: integer
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          properties:
+            external_id:
+              type: integer
+            external_ids:
+              type: object
+              additionalProperties:
+                type: integer
+        apiVersion:
+          type: integer
+    CheckXListRequest:
+      type: object
+      required:
+        - external_id
+        - checkType
+      properties:
+        external_id:
+          type: integer
+        checkType:
+          type: string
+          enum:
+            - checkIn
+            - checkOut
+    CheckXListResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              external_id:
+                type: integer
+              actual:
+                type: integer
+              total:
+                type: integer
+        responseCode:
+          type: string
+        messageObjects:
+          $ref: '#/components/schemas/CheckXListIds'
+        apiVersion:
+          type: integer
+    CheckXListDetailResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+        responseCode:
+          type: string
+        messageObjects:
+          oneOf:
+            - $ref: '#/components/schemas/CheckXListIds'
+            - $ref: '#/components/schemas/ArticleDescription'
+        apiVersion:
+          type: integer
+    CheckXListIds:
+      type: object
+      properties:
+        external_id:
+          type: integer
+        external_ids:
+          type: object
+          additionalProperties:
+            type: integer
+    ArticleDescription:
+      type: string
+      description: Description of the checkedX Article
+    CheckXArticleRequest:
+      type: object
+      properties:
+        article:
+          type: integer
+        checkType:
+          type: string
+          enum: [checkIn, checkOut]
+        lists:
+          type: array
+          items:
+            type: string
+          minItems: 1
+      required:
+        - article
+        - checkType
+        - lists
+    EventArticleResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Article'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    PayResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          nullable: true
+        responseCode:
+          type: string
+        messageObjects:
+          type: string
+          description: Invoice Number
+        apiVersion:
+          type: integer
+    PayRequest:
+      type: object
+      required:
+        - cashpoint
+        - amount
+        - buy_fee
+        - articles
+      properties:
+        cashpoint:
+          type: integer
+        amount:
+          type: number
+        buy_fee:
+          type: number
+        articles:
+          description: Article Ids are in the key of the object
+          type: object
+          additionalProperties:
+            type: string
+            description: Article password
+    MissingArticleResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    PayoutRequest:
+      type: object
+      required:
+        - cashpoint
+        - refund
+        - lists
+      properties:
+        cashpoint:
+          type: integer
+        refund:
+          type: boolean
+        lists:
+          type: array
+          items:
+            type: integer
+    FetchResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ListWrapper'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    ArticleGetRequest:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+    ArticleGetResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/Article'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    ArticleListResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Article'
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    CancelArticleResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            fee_percentage:
+              type: integer
+            price:
+              type: number
+              format: double
+            article_price:
+              type: number
+              format: double
+            fee:
+              type: number
+              format: double
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
