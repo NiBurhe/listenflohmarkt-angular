@@ -1129,9 +1129,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/FindEventResponse'
   /v2/findOnline:
     get:
       tags:
@@ -1144,9 +1142,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Event'
+                  $ref: '#/components/schemas/FindEventResponse'
   /v2/findHost:
     get:
       tags:
@@ -1213,6 +1209,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CategoryResponse'
+  /v2/translations/{lang}:
+    get:
+      summary: Get translations for a specific language
+      tags:
+        - Common
+      operationId: getTranslations
+      parameters:
+        - name: lang
+          in: path
+          required: true
+          description: Language code
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A JSON object of translations in the specified language
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
 components:
   securitySchemes:
     bearerAuth:
@@ -1588,6 +1606,10 @@ components:
         city:
           type: string
         country:
+          type: string
+        lat:
+          type: string
+        long:
           type: string
         start_time:
           type: string
@@ -3706,6 +3728,33 @@ components:
             fee:
               type: number
               format: double
+        responseCode:
+          type: string
+        messageObjects:
+          type: object
+          nullable: true
+        apiVersion:
+          type: integer
+    FindEventResponse:
+      type: object
+      required:
+        - success
+        - data
+        - responseCode
+        - messageObjects
+        - apiVersion
+      properties:
+        success:
+          type: boolean
+        data:
+          type: object
+          properties:
+            events:
+              type: array
+              items:
+                $ref: '#/components/schemas/Event'
+          required:
+            - events
         responseCode:
           type: string
         messageObjects:

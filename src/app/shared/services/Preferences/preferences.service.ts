@@ -14,15 +14,13 @@ export class PreferenceService {
 
   private readonly localStorageKey = "preferences"
 
-  private preferenceSubject = new BehaviorSubject<UserCookiePreferences>(this.preferences);
+  private preferenceSubject = new BehaviorSubject<UserCookiePreferences>(this.loadPreferences());
   preference$ = this.preferenceSubject.asObservable();
 
   constructor(){
-    console.log("PR created")
-    this.loadPreferences();
   }
 
-  setPreference(key: keyof typeof this.preferences, value: boolean) : void {
+  setPreference(key: keyof UserCookiePreferences, value: boolean) : void {
     this.preferences[key] = value;
     localStorage.setItem(this.localStorageKey, JSON.stringify(this.preferences));
     this.preferenceSubject.next(this.preferences)
@@ -32,12 +30,12 @@ export class PreferenceService {
     return this.preferences[key];
   }
 
-  loadPreferences() : void{
+  loadPreferences() : UserCookiePreferences{
     const storedPreferences = localStorage.getItem(this.localStorageKey);
     if (storedPreferences) {
       this.preferences = JSON.parse(storedPreferences);
-      this.preferenceSubject.next(this.preferences)
     }
+    return this.preferences;
   }
 
   isSet() : boolean{

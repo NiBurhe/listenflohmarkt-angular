@@ -1,0 +1,5 @@
+<div id="map" style="height: 500px;" *ngIf="isMapEnabled; else requestOSM"></div>
+
+<ng-template #requestOSM>
+    You not accepted OSM. <button (click)="acceptOSM()">Accept OSM</button>
+  </ng-template>
